@@ -11,14 +11,37 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("RTPApp")
 
-# Include sub-projects.
-add_subdirectory ("RTPApp")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 elseif(MSVC)
-	  add_compile_options(PRIVATE /W4 /WX)
+	  add_compile_options(/W4 /WX)
 else()
-	  add_compile_options(PRIVATE -Wall -Wextra -Wpedantic -Werror -g)
+	  add_compile_options(-Wall -Wextra -Wpedantic -Werror -g)
 endif()
+
+option(ASAN_ENABLED "Build this target with AddressSanitizer" ON)
+
+if(ASAN_ENABLED)
+   if(MSVC)
+     add_compile_options(/fsanitize=address)
+   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+     add_compile_options(-fsanitize=address)
+     add_link_options(-fsanitize=address)
+   elseif(CMAKE_BUILD_TYPE STREQUAL Debug) # Clang doesn't support ASAN in debug mode
+	 message(WARNING "ASAN is not supported in debug mode")
+   else()
+	 add_compile_options(-fsanitize=address)
+	 add_link_options(-fsanitize=address)
+   endif()
+endif()
+
+# Include sub-projects.
+add_subdirectory ("RTPApp")
+add_subdirectory ("Server")
+add_subdirectory ("Client")
+add_subdirectory ("Network")
+add_subdirectory ("common")
 

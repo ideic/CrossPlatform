@@ -3,4 +3,4 @@
 #
 
 # Add source to this project's executable.
-add_executable (RTPApp "RTPApp.cpp" "RTPApp.h")
+add_executable (Server "RTPServer.cpp" "RTPServer.h")
