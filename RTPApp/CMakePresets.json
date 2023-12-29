@@ -57,62 +57,62 @@
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
-        {
-          "name": "linux-debug-gcc",
-          "displayName": "Linux Debug GCC",
-          "generator": "Ninja",
-          "binaryDir": "${sourceDir}/out/build/${presetName}",
-          "installDir": "${sourceDir}/out/install/${presetName}",
-          "cacheVariables": {
-            "CMAKE_BUILD_TYPE": "Debug"//,
+      {
+        "name": "linux-debug-gcc",
+        "displayName": "Linux Debug GCC",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/out/build/${presetName}",
+        "installDir": "${sourceDir}/out/install/${presetName}",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug" //,
           //  "CMAKE_C_COMPILER": "cc.exe",
           //  "CMAKE_CXX_COMPILER": "gcc.exe"
-          },
-          "condition": {
-            "type": "equals",
-            "lhs": "${hostSystemName}",
-            "rhs": "Linux"
-          },
-          "vendor": {
-            "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
-              "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
-            }
+        },
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        },
+        "vendor": {
+          "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+            "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
           }
         },
-        { "name": "windows-base-llvm",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang.exe",
-                "CMAKE_CXX_COMPILER": "clang++.exe"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+        "architecture": {
+          "value": "x86-64",
+          "strategy": "external"
+        }
+      },
+      {
+        "name": "windows-base-llvm",
+        "hidden": true,
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/out/build/${presetName}",
+        "installDir": "${sourceDir}/out/install/${presetName}",
+        "cacheVariables": {
+          "CMAKE_C_COMPILER": "clang.exe",
+          "CMAKE_CXX_COMPILER": "clang++.exe"
         },
+        "architecture": {
+          "value": "x64",
+          "strategy": "external"
+        }
+      },
       {
         "name": "llvm-x64-debug",
         "displayName": "llvm x64 Debug",
         "inherits": "windows-base-llvm",
-        "architecture": {
-          "value": "x64",
-          "strategy": "external"
-        },
         "cacheVariables": {
           "CMAKE_BUILD_TYPE": "Debug"
         }
       },
-        {
-          "name": "llvm-x64-release",
-          "displayName": "llvm x64 Release",
-          "inherits": "llvm-x64-debug",
-          "cacheVariables": {
-            "CMAKE_BUILD_TYPE": "Release"
-          }
+      {
+        "name": "llvm-x64-release",
+        "displayName": "llvm x64 Release",
+        "inherits": "windows-base-llvm",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release"
         }
+      }
     ]
 }
