@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 namespace Xaba::Network {
-	class TCPClient
+	class UDPClient
 	{
 		struct SocketInfo;
 		std::string _host;
@@ -12,7 +12,7 @@ namespace Xaba::Network {
 		std::shared_ptr<SocketInfo> _socketInfo;
 
 	public:
-		TCPClient(std::string host, uint16_t port);
+		UDPClient(std::string host, uint16_t port);
 		void Connect();
 
 		std::vector<uint8_t> ReceiveData();

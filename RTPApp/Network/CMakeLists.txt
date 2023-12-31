@@ -3,4 +3,4 @@
 #
 
 # Add source to this project's executable.
-add_library(Network STATIC TCPClient.cpp) 
+add_library(Network STATIC TCPClient.cpp "UDPClient.h" "UDPClient.cpp" "TCPClient.h" "UDPServer.h" "UDPServer.cpp" "NetworkHeader.h") 

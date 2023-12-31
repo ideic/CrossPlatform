@@ -43,5 +43,5 @@ add_subdirectory ("RTPApp")
 add_subdirectory ("Server")
 add_subdirectory ("Client")
 add_subdirectory ("Network")
-add_subdirectory ("common")
+add_subdirectory ("Common")
 
