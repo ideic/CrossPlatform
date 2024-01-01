@@ -1,7 +1,7 @@
 #include "InputParser.h"
 #include <algorithm>
 using namespace std::string_literals;
-InputParser::InputParser(int& argc, char** argv)
+InputParser::InputParser(int argc, char** argv)
 {
 	for (int i = 1; i < argc; ++i)
 		_tokens.emplace_back(argv[i]);

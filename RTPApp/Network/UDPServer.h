@@ -2,7 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "../Common/BlockingQueue.h"
+#include "Common/BlockingQueue.h"
 namespace Xaba::Network {
 	class UDPServer
 	{

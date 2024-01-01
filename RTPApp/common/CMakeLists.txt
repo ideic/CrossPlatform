@@ -3,4 +3,5 @@
 #
 
 # Add source to this project's executable.
-add_library(common STATIC InputParser.cpp "InputParser.h" "ThreadManager.h" "ThreadManager.cpp" "BlockingQueue.h" "BlockingQueue.cpp" "Logger/Logger.h") 
+add_library(Common STATIC InputParser.cpp "InputParser.h" "ThreadManager.h" "ThreadManager.cpp" "BlockingQueue.h" "BlockingQueue.cpp" "Logger/Logger.h") 
+#target_include_directories(Common INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )

@@ -2,7 +2,7 @@
 //
 
 #include "RTPServer.h"
-#include "../Common/InputParser.h"
+#include "Common/InputParser.h"
 using namespace std;
 //#include <unistd.h>
 //#include <limits.h>

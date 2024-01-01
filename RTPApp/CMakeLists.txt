@@ -13,13 +13,15 @@ project ("RTPApp")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
+if (MSVC)
+	add_compile_options(/Qspectre)
+endif()
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 elseif(MSVC)
 	  add_compile_options(/W4 /WX)
 else()
-	  add_compile_options(-Wall -Wextra -Wpedantic -Werror -g)
+	  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Werror -Wformat=2 -Wunused -g)
 endif()
 
 option(ASAN_ENABLED "Build this target with AddressSanitizer" ON)

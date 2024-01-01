@@ -4,4 +4,5 @@
 
 # Add source to this project's executable.
 add_executable (Server "RTPServer.cpp" "RTPServer.h")
-target_link_libraries(Server common)
+target_link_libraries(Server PUBLIC Common)
+target_include_directories(Server PUBLIC "${PROJECT_SOURCE_DIR}")
