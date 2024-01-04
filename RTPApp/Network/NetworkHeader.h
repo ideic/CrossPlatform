@@ -36,7 +36,7 @@
 #ifdef WIN32
 namespace Xaba::Network
 {
-    std::string GetErrorMessage(int systemtErrorCode)
+    inline std::string GetErrorMessage(int systemtErrorCode)
     {
         char* message;
         auto msgLength = FormatMessageA(
@@ -52,7 +52,7 @@ namespace Xaba::Network
         return std::string(message, msgLength);
     }
 
-    void InitSocketCommunicaiton() {
+    inline void InitSocketCommunicaiton() {
         WSADATA wsaData = {  };
         auto iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
         if (iResult != 0) {
@@ -60,7 +60,7 @@ namespace Xaba::Network
         }
     }
 
-    void CloseSocketCommunicaiton() {
+    inline void CloseSocketCommunicaiton() {
         WSACleanup();
     }
 }

@@ -11,7 +11,7 @@ struct UDPServer::SocketInfo {
 #endif
 };
 
-UDPServer::UDPServer(std::string _host, std::uint16_t _port) : _host(std::move(_host)), _port(std::move(_port))
+UDPServer::UDPServer(std::string host, std::uint16_t port) : _host(std::move(host)), _port(std::move(port))
 {
     _socketInfo = std::shared_ptr<SocketInfo>(new SocketInfo, [](UDPServer::SocketInfo* socketInfo) {
         if (socketInfo->socketId != MY_INVALID_SOCKET)

@@ -37,12 +37,13 @@ namespace Xaba {
 			ss << std::this_thread::get_id();
 
 			Logger::Info("Start Thread from "s + ss.str());
+
 			_thread = std::thread([this]() {
 				try {
-					std::stringstream ss{};
-					ss << std::this_thread::get_id();
+					std::stringstream ss2{};
+					ss2 << std::this_thread::get_id();
 					
-					Logger::Info("New Thread started: " + ss.str());
+					Logger::Info("New Thread started: " + ss2.str());
 					
 					while (true){ 
 						if (_stopped) break;
@@ -51,7 +52,7 @@ namespace Xaba {
 							break;
 						};
 					}
-					Logger::Info(" Thread stopped" + ss.str());
+					Logger::Info(" Thread stopped" + ss2.str());
 				}
 				catch (const std::exception& ex) {
 					Logger::Error("Error during thread running :"s + ex.what());

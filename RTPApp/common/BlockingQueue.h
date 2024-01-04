@@ -39,11 +39,14 @@ namespace Xaba {
 
 	template<typename VALUE_TYPE>
 	VALUE_TYPE BlockingQueue<VALUE_TYPE>::getNext() {
-		std::unique_lock<std::mutex> lock(mtx);
-		cv.wait(lock, [this] {return (!items.empty() || terminated); });
+		VALUE_TYPE result;
+		{
+			std::unique_lock<std::mutex> lock(mtx);
+			cv.wait(lock, [this] {return (!items.empty() || terminated); });
 
-		VALUE_TYPE result = std::move(items.front());
-		items.pop();
+			result = std::move(items.front());
+			items.pop(); 
+		}
 		return result;
 	}
 
