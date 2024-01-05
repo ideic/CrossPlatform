@@ -30,7 +30,14 @@ else()
 	  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Werror -Wformat=2 -Wunused -Wundef -g)
 endif()
 
-option(ASAN_ENABLED2 "Build this target with AddressSanitizer" ON)
+if (MSVC)
+	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+#else ()
+#	set(CMAKE_CXX_FLAGS_RELEASE "-MT")
+#	set(CMAKE_CXX_FLAGS_DEBUG "-MTd")
+endif()
+
+option(ASAN_ENABLED "Build this target with AddressSanitizer" OFF)
 
 if(ASAN_ENABLED)
    if(MSVC)
@@ -47,14 +54,8 @@ if(ASAN_ENABLED)
 	 add_link_options(-fsanitize=address,undefined)
    endif()
 endif()
+unset(ASAN_ENABLED CACHE)
 
-
-if (MSVC)
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-#else ()
-#	set(CMAKE_CXX_FLAGS_RELEASE "-MT")
-#	set(CMAKE_CXX_FLAGS_DEBUG "-MTd")
-endif()
 # Include sub-projects.
 add_subdirectory ("RTPApp")
 add_subdirectory ("Server")
@@ -63,4 +64,3 @@ add_subdirectory ("Network")
 add_subdirectory ("Common")
 
 add_subdirectory ("CommonTest")
-

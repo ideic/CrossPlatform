@@ -15,7 +15,7 @@ namespace Xaba {
 		std::thread _thread{};
 		std::shared_ptr<T> _instance{ nullptr };
 		std::atomic<bool> _stopped{ false };
-
+		std::shared_ptr<ILogger> _logger{ nullptr };
 	public:
 		ThreadManager<T>(const ThreadManager<T>& from) = delete;
 		ThreadManager<T>& operator=(const ThreadManager<T>& from) = delete;
@@ -23,7 +23,8 @@ namespace Xaba {
 		ThreadManager<T>(ThreadManager<T>&& from) = default;
 		ThreadManager<T>& operator=(ThreadManager<T>&& from) = default;
 
-		ThreadManager(std::shared_ptr<T> instance): _instance(std::move(instance)) {
+		ThreadManager(std::shared_ptr<T> instance,  std::shared_ptr<ILogger> logger): 
+			_instance(std::move(instance)), _logger(std::move(logger)) {
 		}
 
 		~ThreadManager() {
@@ -36,14 +37,14 @@ namespace Xaba {
 			std::stringstream ss{};
 			ss << std::this_thread::get_id();
 
-			Logger::Info("Start Thread from "s + ss.str());
+			_logger->Info("Start Thread from "s + ss.str());
 
 			_thread = std::thread([this]() {
 				try {
 					std::stringstream ss2{};
 					ss2 << std::this_thread::get_id();
 					
-					Logger::Info("New Thread started: " + ss2.str());
+					_logger->Info("New Thread started: " + ss2.str());
 					
 					while (true){ 
 						if (_stopped) break;
@@ -52,10 +53,10 @@ namespace Xaba {
 							break;
 						};
 					}
-					Logger::Info(" Thread stopped" + ss2.str());
+					_logger->Info(" Thread stopped" + ss2.str());
 				}
 				catch (const std::exception& ex) {
-					Logger::Error("Error during thread running :"s + ex.what());
+					_logger->Error("Error during thread running :"s + ex.what());
 				}
 			});
 		};
