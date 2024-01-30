@@ -5,9 +5,9 @@
 namespace Xaba {
 	template<typename VALUE_TYPE>
 	class BlockingQueue {
-		std::queue<VALUE_TYPE> items;
-		std::condition_variable cv;
-		std::mutex mtx;
+		std::queue<VALUE_TYPE> items_;
+		std::condition_variable cv_;
+		std::mutex mtx_;
 	public:
 		void push(VALUE_TYPE&& value);
 		VALUE_TYPE getNext();
@@ -15,20 +15,20 @@ namespace Xaba {
 
 	template<typename VALUE_TYPE>
 	void BlockingQueue<VALUE_TYPE>::push(VALUE_TYPE&& value) {
-		std::unique_lock<std::mutex> lock(mtx);
-		items.push(std::move(value));
-		cv.notify_one();
+		std::unique_lock<std::mutex> lock(mtx_);
+		items_.push(std::move(value));
+		cv_.notify_one();
 	}
 
 	template<typename VALUE_TYPE>
 	VALUE_TYPE BlockingQueue<VALUE_TYPE>::getNext() {
 		VALUE_TYPE result;
 		{
-			std::unique_lock<std::mutex> lock(mtx);
-			cv.wait(lock, [this] {return (!items.empty()); });
+			std::unique_lock<std::mutex> lock(mtx_);
+			cv_.wait(lock, [this] {return (!items_.empty()); });
 
-			result = std::move(items.front());
-			items.pop(); 
+			result = std::move(items_.front());
+			items_.pop(); 
 		}
 		return result;
 	}
@@ -39,18 +39,19 @@ namespace Xaba {
 #include <optional>
 #include <atomic>
 #include <thread>
+using namespace std::chrono_literals;
 namespace Xaba {
 	template<typename VALUE_TYPE>
 	class BlockingQueue2 {
-		//std::dequeue<VALUE_TYPE> items;
-	//	std::condition_variable cv;
-	//	std::mutex mtx;
+		//std::dequeue<VALUE_TYPE> items_;
+	//	std::condition_variable cv_;
+	//	std::mutex mtx_;
 
 		//std::vector<uint8_t> _buf;// (6'000'000, 0);// , 60'000> _buf{};
 		constexpr static size_t bufSize_ = 30'000;
 		std::pmr::monotonic_buffer_resource _monotonicPool{bufSize_};// { _buf.data(), _buf.size() };
 		std::pmr::unsynchronized_pool_resource _pool{ &_monotonicPool };
-		std::pmr::vector<VALUE_TYPE> _items{&_pool };
+		std::pmr::vector<VALUE_TYPE> _items_{&_pool };
 
 		std::atomic<size_t> size_{ 0 };
 		size_t upperIdx_{ 0 };
@@ -60,25 +61,25 @@ namespace Xaba {
 		VALUE_TYPE getNext();
 
 		BlockingQueue2() {
-			_items.resize(bufSize_);
+			_items_.resize(bufSize_);
 		}
 		//BlockingQueue2() {
 		//	_buf.resize(2'000'000'000);
 		//	_pool.emplace(_buf.data(), _buf.size());
-		//	_items = std::pmr::deque<VALUE_TYPE>(&_pool.value());
+		//	_items_ = std::pmr::deque<VALUE_TYPE>(&_pool.value());
 		//}
 	};
 	template<typename VALUE_TYPE>
 	void BlockingQueue2<VALUE_TYPE>::push(VALUE_TYPE &&data) {
 		size_t size = size_;
-		_items[++upperIdx_] = std::move(data);
+		_items_[++upperIdx_] = std::move(data);
 		while (!std::atomic_compare_exchange_strong(&size_, &size, size +1)) {
 			size = size_;
 		};
 		if (upperIdx_ == bufSize_-1) {
 			upperIdx_ = 0;
 		}
-		//std::unique_lock<std::mutex> lock(mtx);
+		//std::unique_lock<std::mutex> lock(mtx_);
 	}
 
 	template<typename VALUE_TYPE>
@@ -92,7 +93,7 @@ namespace Xaba {
 		while (!std::atomic_compare_exchange_strong( &size_, &size, size - 1)) {
 			size = size_;
 		};
-		result = std::move(_items[lowIdx_++]);
+		result = std::move(_items_[lowIdx_++]);
 		if (lowIdx_ == bufSize_-1) {
 			lowIdx_ = 0;
 		}
