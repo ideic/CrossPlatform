@@ -12,61 +12,76 @@ namespace Xaba {
 	using namespace std::string_literals;
 	template<class T> class ThreadManager {
 	private:
-		std::thread _thread{};
-		std::shared_ptr<T> _instance{ nullptr };
-		std::atomic<bool> _stopped{ false };
-		std::shared_ptr<ILogger> _logger{ nullptr };
+		std::thread thread_{};
+		std::shared_ptr<T> instance_{ nullptr };
+		std::atomic<bool> stopped_{ false };
+		std::shared_ptr<ILogger> logger_{ nullptr };
 	public:
-		ThreadManager<T>(const ThreadManager<T>& from) = delete;
-		ThreadManager<T>& operator=(const ThreadManager<T>& from) = delete;
+		ThreadManager(const ThreadManager& from) = delete;
+		ThreadManager& operator=(const ThreadManager& from) = delete;
 
-		ThreadManager<T>(ThreadManager<T>&& from) = default;
-		ThreadManager<T>& operator=(ThreadManager<T>&& from) = default;
+		ThreadManager(ThreadManager&& from) {
+			if (!from.stopped_) {
+				throw std::runtime_error("ThreadManager can't be moved while running");
+			}
+			thread_ = std::move(from.thread_);
+			instance_ = std::move(from.instance_);
+			stopped_ = false;
+			logger_ = std::move(from.logger_);
+		} ;
+		ThreadManager& operator=(ThreadManager&& from) {
+			if (!from.stopped_) {
+				throw std::runtime_error("ThreadManager can't be moved while running");
+			}
+			thread_ = std::move(from.thread_);
+			instance_ = std::move(from.instance_);
+			stopped_ = false;
+			logger_ = std::move(from.logger_);
+			return *this;
+		};
 
-		ThreadManager(std::shared_ptr<T> instance,  std::shared_ptr<ILogger> logger): 
-			_instance(std::move(instance)), _logger(std::move(logger)) {
+		ThreadManager(std::shared_ptr<T> instance,  std::shared_ptr<ILogger> logger):
+			instance_(std::move(instance)), logger_(std::move(logger)) {
 		}
 
 		~ThreadManager() {
-			if (_thread.joinable()) {
+			if (thread_.joinable()) {
 				Stop();
-				_thread.join();
+				thread_.join();
 			}
 		}
 		void Start() {
 			std::stringstream ss{};
 			ss << std::this_thread::get_id();
 
-			_logger->Info("Start Thread from "s + ss.str());
+			logger_->Info("Start thread_ from "s + ss.str());
 
-			_thread = std::thread([this]() {
+			thread_ = std::thread([this]() {
 				try {
 					std::stringstream ss2{};
 					ss2 << std::this_thread::get_id();
 					
-					_logger->Info("New Thread started: " + ss2.str());
+					logger_->Info("New thread_ started: " + ss2.str());
 					
-					while (true){ 
-						if (_stopped) break;
-						if (_instance->Fetch()) {
-							_stopped = true;
-							break;
+					while (!stopped_){ 
+						if (instance_->Fetch()) {
+							stopped_ = true;
 						};
 					}
-					_logger->Info(" Thread stopped" + ss2.str());
+					logger_->Info(" thread_ stopped" + ss2.str());
 				}
 				catch (const std::exception& ex) {
-					_logger->Error("Error during thread running :"s + ex.what());
+					logger_->Error("Error during thread_ running :"s + ex.what());
 				}
 			});
 		};
 
 		void Stop() {
-			_stopped = true;
+			stopped_ = true;
 		};
 
 		std::shared_ptr<T> GetInstance() {
-			return _instance;
+			return instance_;
 		}
 	};
 }
