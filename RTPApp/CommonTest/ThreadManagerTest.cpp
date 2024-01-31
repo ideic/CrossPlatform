@@ -10,11 +10,11 @@ using namespace std::chrono_literals;
 struct TestClass {
 	std::atomic<bool> called{ false };
 	std::thread::id threadId;
-	std::atomic<bool> fetchReturn{ true };
-	bool Fetch() {
+	std::atomic<bool> keepRunningReturn{ false };
+	bool KeepRunning() {
 		called = true;
 		threadId = std::this_thread::get_id();
-		return fetchReturn;
+		return keepRunningReturn;
 	}
 };
 struct LoggerMock : public ILogger {
@@ -46,7 +46,7 @@ TEST(ThreadManagerTest, moveFails) {
 	auto instance = std::make_shared<TestClass>();
 	auto logger = std::make_shared<LoggerMock>();
 	ThreadManager<TestClass> manager(instance, logger);
-	instance->fetchReturn = false;
+	instance->keepRunningReturn = true;
 	manager.Start();
 	while (!instance->called) {
 		std::this_thread::sleep_for(1ms);
@@ -60,7 +60,7 @@ TEST(ThreadManagerTest, move) {
 	auto instance = std::make_shared<TestClass>();
 	auto logger = std::make_shared<LoggerMock>();
 	ThreadManager<TestClass> manager(instance, logger);
-	instance->fetchReturn = true;
+	instance->keepRunningReturn = false;
 	manager.Start();
 	while (!instance->called) {
 		std::this_thread::sleep_for(1ms);

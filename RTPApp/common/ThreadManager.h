@@ -64,7 +64,7 @@ namespace Xaba {
 					logger_->Info("New thread_ started: " + ss2.str());
 					
 					while (!stopped_){ 
-						if (instance_->Fetch()) {
+						if (!instance_->KeepRunning()) {
 							stopped_ = true;
 						};
 					}

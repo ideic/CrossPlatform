@@ -64,3 +64,4 @@ add_subdirectory ("Network")
 add_subdirectory ("Common")
 
 add_subdirectory ("CommonTest")
+add_subdirectory ("NetworkTest")
