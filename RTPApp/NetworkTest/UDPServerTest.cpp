@@ -14,7 +14,7 @@ using namespace std::string_literals;
 
 struct UDPServerTest : public ::testing::Test
 {
-	static void UDPServerTest::SetUpTestSuite()
+	static void SetUpTestSuite()
 	{
 		#ifdef WIN32
 			WSADATA wsaData;
@@ -25,7 +25,7 @@ struct UDPServerTest : public ::testing::Test
 		#endif // WIN32
 
 	}
-	static void UDPServerTest::TearDownTestSuite(){
+	static void TearDownTestSuite(){
 		#ifdef WIN32
 			WSACleanup();
 		#endif // WIN32
@@ -53,8 +53,9 @@ TEST_F(UDPServerTest, Init)
 			server->Init();
 			break;	
 		}
-		catch (const std::exception&)
+		catch (const std::exception& ex)
 		{
+			logger->Error(ex.what());
 			i += 2;
 		}
 	}

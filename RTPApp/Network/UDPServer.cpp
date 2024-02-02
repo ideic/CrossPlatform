@@ -30,26 +30,38 @@ void UDPServer::Init()
 
     // Filling server information 
     servaddr.sin_family = AF_INET; // IPv4 
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    //inet_pton(servaddr.sin_family, _host.c_str(), &servaddr.sin_addr.s_addr);
+    //servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    inet_pton(servaddr.sin_family, host_.c_str(), &servaddr.sin_addr.s_addr);
     servaddr.sin_port = htons(port_);
 
     struct timeval tv;
     tv.tv_sec = 5;
     tv.tv_usec = 0;
-    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv)); res == SOCKET_ERROR) {
+    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv)); res == MY_SOCKET_ERROR) {
         auto error = MY_GET_LAST_ERROR;
         throw std::runtime_error("UDPServer setsockopt SO_RCVTIMEO failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 
     }
-    char opt = 1;
-    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, &opt, sizeof(opt)); res == SOCKET_ERROR)
-    {
-		auto error = MY_GET_LAST_ERROR;
-		throw std::runtime_error("UDPServer setsockopt SO_EXCLUSIVEADDRUSE failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
-	}
+#ifdef WIN32
+	char opt = 0;
+#else
+    int opt = 0;
+#endif // WIN32
 
-    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_RCVBUF, (char*)&MAX_MSG_SIZE, sizeof(MAX_MSG_SIZE)); res == SOCKET_ERROR)
+    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); res == MY_SOCKET_ERROR)
+    {
+        auto error = MY_GET_LAST_ERROR;
+        throw std::runtime_error("UDPServer setsockopt SO_REUSEADDR failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
+    }
+#ifdef WIN32
+    opt = 1;
+    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, &opt, sizeof(opt)); res == MY_SOCKET_ERROR)
+    {
+        auto error = MY_GET_LAST_ERROR;
+        throw std::runtime_error("UDPServer setsockopt SO_EXCLUSIVEADDRUSE failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
+    }
+#endif // WIN32
+    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_RCVBUF, (char*)&MAX_MSG_SIZE, sizeof(MAX_MSG_SIZE)); res == MY_SOCKET_ERROR)
     {
         auto error = MY_GET_LAST_ERROR;
         throw std::runtime_error("UDPServer setsockopt SO_RCVBUF failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
@@ -72,10 +84,11 @@ bool UDPServer::KeepRunning()
 
     if (result == MY_SOCKET_ERROR) {
 		auto error = MY_GET_LAST_ERROR;
-        if (error == WSAETIMEDOUT) {
+        if (error == MY_ETIMEDOUT) {
 			return true;
 		}
 		logger_->Error("UDP Receive failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
+        return true;
 	}
     queue.push(std::vector<uint8_t>(buffer, buffer + result));
     return true;

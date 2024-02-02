@@ -19,6 +19,7 @@
 #define MY_GET_ERROR_MESSAGE GetErrorMessage
 #define INIT_SOCKET InitSocketCommunicaiton()
 #define CLOSESOCKET closesocket
+#define MY_ETIMEDOUT WSAETIMEDOUT
 #endif
 #ifndef WIN32
 #include <sys/socket.h>
@@ -32,6 +33,8 @@
 #define MY_GET_ERROR_MESSAGE std::strerror
 #define INIT_SOCKET ;
 #define CLOSESOCKET close
+#define MY_ETIMEDOUT ETIMEDOUT
+
 #endif 
 #ifdef WIN32
 namespace Xaba::Network
