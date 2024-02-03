@@ -29,7 +29,7 @@ test:
   assemblies:
     only:
     - RTPApp\out\build\x64-release\**\*Test.exe
-test-script:
+test_script:
     -RTPApp\out\build\x64-release\**\*Test.exe --gtest_output=xml:testresults.xml
 
 notifications:
