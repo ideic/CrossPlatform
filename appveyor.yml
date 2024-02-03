@@ -30,6 +30,11 @@ test_script:
         NetworkTest\NetworkTest.exe --gtest_output=xml:testresults.xml
         
         CommonTest\CommonTest.exe --gtest_output=xml:testresults.xml
+on_finish:
+  - ps: |
+    $wc = New-Object 'System.Net.WebClient'
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
 notifications:
 - provider: Email
   to:
