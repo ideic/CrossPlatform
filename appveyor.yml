@@ -30,7 +30,7 @@ matrix:
         matrix:
             only:
                 - configuration: msvcDebug
-                    image: Visual Studio 2022
+                  image: Visual Studio 2022
         environment:
                PresetName: x64-debug 
         before_build:
@@ -50,7 +50,7 @@ matrix:
         matrix:
             only:
                 - configuration: msvcRelease
-                    image: Visual Studio 2022
+                  image: Visual Studio 2022
         environment:
                 PresetName: x64-release
         before_build:
@@ -70,7 +70,7 @@ matrix:
         matrix:
             only:
                 - configuration: clangDebug
-                    image: Visual Studio 2022
+                  image: Visual Studio 2022
         environment:
                PresetName: llvm-x64-debug
         before_build:
@@ -90,7 +90,7 @@ matrix:
         matrix:
             only:
                 - configuration: clangRelease
-                    image: Visual Studio 2022
+                  image: Visual Studio 2022
         environment:
                PresetName: llvm-x64-release
         before_build:
@@ -110,7 +110,7 @@ matrix:
         matrix:
             only:
                 - configuration: clangDebug
-                image: Ubuntu
+                  image: Ubuntu
         environment:
                PresetName: linux-base-llvm-debug
         test_script:
@@ -125,7 +125,7 @@ matrix:
         matrix:
             only:
                 - configuration: clangRelease
-                image: Ubuntu
+                  image: Ubuntu
         environment:
                PresetName: linux-base-llvm-release
         test_script:
@@ -140,7 +140,7 @@ matrix:
         matrix:
             only:
                 - configuration: gccDebug
-                image: Ubuntu
+                  image: Ubuntu
         environment:
                PresetName: linux-debug-gcc
         test_script:
@@ -155,7 +155,7 @@ matrix:
         matrix:
             only:
                 - configuration: gccRelease
-                    image: Ubuntu
+                  image: Ubuntu
         environment:
                PresetName: linux-release-gcc                    
         test_script:
