@@ -5,8 +5,6 @@ platform:
 environment:
   APPVEYOR_RDP_PASSWORD: Carin123!
   VCVAR2022: 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsamd64_x86.bat'  
-init:
-- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 before_build:
 - ps: |
     # ...example script to set the proper flags for vcvarsall ...
@@ -27,6 +25,11 @@ build_script:
     cd out\build\x64-release
 
     cmake --build .
+test:
+  assemblies:
+    only:
+    - c:\projects\crossplatform\RTPApp\out\build\x64-release\NetworkTest\NetworkTest.exe
+    - c:\projects\crossplatform\RTPApp\out\build\x64-release\CommonTest\CommonTest.exe
 notifications:
 - provider: Email
   to:
@@ -34,5 +37,3 @@ notifications:
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true
-on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
