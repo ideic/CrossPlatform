@@ -28,8 +28,10 @@ build_script:
 test:
   assemblies:
     only:
-    - RTPApp\out\build\x64-release\NetworkTest\NetworkTest.exe
-    - RTPApp\out\build\x64-release\CommonTest\CommonTest.exe
+    - RTPApp\out\build\x64-release\**\*Test.exe
+test-script:
+    -RTPApp\out\build\x64-release\**\*Test.exe --gtest_output=xml:testresults.xml
+
 notifications:
 - provider: Email
   to:
