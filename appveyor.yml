@@ -4,42 +4,169 @@ image:
 - Ubuntu
 platform:
 - x64
+configuration:
+- msvcDebug
+- msvcRelease
+- gccDebug
+- gccRelease
+- clangDebug
+- clangRelease
 environment:
     matrix:
       - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
         VCVAR2022: 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat'
-      - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu 
-      
-before_build:
-- ps: |
-    # ...example script to set the proper flags for vcvarsall ...
-    # syntax: vcvarsall.bat [architecture] [platform_type] [winsdk_version] [-vcvars_ver=vcversion]
-    $Architecture = $env:PLATFORM # simplified, works for x86 and x64
-    if ("$env:APPVEYOR_BUILD_WORKER_IMAGE" -eq "Visual Studio 2022") {
-      $env:VCVARSALL = "`"$env:VCVAR2022`" $Architecture"
-    } else {
-      $env:VCVARSALL = ""
-    }
-- call %VCVARSALL%
+matrix:
+  exclude:
+    - image: Visual Studio 2022
+      configuration: gccDebug
+    - image: Visual Studio 2022
+      configuration: gccRelease
+    - image: Ubuntu
+      configuration: msvcDebug
+    - image: Ubuntu
+      configuration: msvcRelease
+  for:
+    - matrix:
+        only:
+            - configuration: msvcDebug
+              image: Visual Studio 2022
+            environment:
+               PresetName: x64-debug 
+            before_build:
+            - ps: |
+                  call %VCVAR2022%
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - ps: |
+                $wc = New-Object 'System.Net.WebClient'
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
+   - matrix:
+        only:
+            - configuration: msvcRelease
+              image: Visual Studio 2022
+            environment:
+               PresetName: x64-release
+            before_build:
+            - ps: |
+                  call %VCVAR2022%             
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - ps: |
+                $wc = New-Object 'System.Net.WebClient'
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))                  
+   - matrix:
+        only:
+            - configuration: clangDebug
+              image: Visual Studio 2022
+            environment:
+               PresetName: llvm-x64-debug
+            before_build:
+            - ps: |
+                  call %VCVAR2022%               
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - ps: |
+                $wc = New-Object 'System.Net.WebClient'
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
+   - matrix:
+        only:
+            - configuration: clangRelease
+              image: Visual Studio 2022
+            environment:
+               PresetName: llvm-x64-release
+            before_build:
+            - ps: |
+                  call %VCVAR2022%
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - ps: |
+                $wc = New-Object 'System.Net.WebClient'
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
+   - matrix:
+        only:
+            - configuration: clangDebug
+              image: Ubuntu
+            environment:
+               PresetName: linux-base-llvm-debug
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - sh: |
+                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+   - matrix:
+        only:
+            - configuration: clangRelease
+              image: Ubuntu
+            environment:
+               PresetName: linux-base-llvm-release
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - sh: |
+                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"               
+   - matrix:
+        only:
+            - configuration: gccDebug
+              image: Ubuntu
+            environment:
+               PresetName: linux-debug-gcc
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - sh: |
+                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+    - matrix:
+        only:
+            - configuration: gccRelease
+              image: Ubuntu
+            environment:
+               PresetName: linux-release-gcc                    
+            test_script:
+            - cmd: >- 
+                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
+                    
+                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
+            after_test:
+            - sh: |
+                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
 build_script:
 - cmd: >-
     cd RTPApp
 
-    cmake . --preset x64-release
+    cmake . --%PresetName%
 
-    cd out\build\x64-release
+    cd out\build\%PresetName%
 
     cmake --build .
-test_script:
-- cmd: >- 
-        NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
-        
-        CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
-after_test:
-- ps: |
-    $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
 notifications:
 - provider: Email
   to:
