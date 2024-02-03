@@ -34,7 +34,7 @@ for:
         environment:
                PresetName: x64-debug 
         before_build:
-            - call %VCVAR2022%
+            - call "%VCVAR2022%"
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -54,7 +54,7 @@ for:
         environment:
                 PresetName: x64-release
         before_build:
-             - call %VCVAR2022%             
+             - call "%VCVAR2022%"          
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -74,7 +74,7 @@ for:
         environment:
                PresetName: llvm-x64-debug
         before_build:
-             - call %VCVAR2022%            
+             - call "%VCVAR2022%"            
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -93,7 +93,7 @@ for:
         environment:
                PresetName: llvm-x64-release
         before_build:
-             - call %VCVAR2022%
+             - call "%VCVAR2022%"
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
