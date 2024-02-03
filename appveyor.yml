@@ -25,7 +25,7 @@ matrix:
       configuration: msvcDebug
     - image: Ubuntu
       configuration: msvcRelease
-  for:
+for:
     - 
         matrix:
             only:
