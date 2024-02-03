@@ -27,9 +27,9 @@ build_script:
     cmake --build .
 test_script:
 - cmd: >- 
-        NetworkTest\NetworkTest.exe --gtest_output=xml:testresults.xml
+        NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
         
-        CommonTest\CommonTest.exe --gtest_output=xml:testresults.xml
+        CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
 after_test:
 - ps: |
     $wc = New-Object 'System.Net.WebClient'
