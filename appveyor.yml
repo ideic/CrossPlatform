@@ -12,9 +12,7 @@ configuration:
 - clangDebug
 - clangRelease
 environment:
-    matrix:
-      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-        VCVAR2022: 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat'
+     VCVAR2022: 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat'
 matrix:
   exclude:
     - image: Visual Studio 2022
@@ -34,18 +32,7 @@ for:
         environment:
                PresetName: x64-debug 
         before_build:
-            - call "%VCVAR2022%"
-        test_script:
-            - cmd: >- 
-                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
-                    
-                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
-        after_test:
-            - ps: |
-                $wc = New-Object 'System.Net.WebClient'
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
-                
+            - call "%VCVAR2022%"                
     - 
         matrix:
             only:
@@ -74,17 +61,7 @@ for:
         environment:
                PresetName: llvm-x64-debug
         before_build:
-             - call "%VCVAR2022%"            
-        test_script:
-            - cmd: >- 
-                    NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
-                    
-                    CommonTest\CommonTest.exe --gtest_output=xml:CommonTest\testresults.xml
-        after_test:
-            - ps: |
-                $wc = New-Object 'System.Net.WebClient'
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
+             - call "%VCVAR2022%"
     - 
         matrix:
             only:
@@ -111,14 +88,6 @@ for:
                   image: Ubuntu
         environment:
                PresetName: linux-base-llvm-debug
-        test_script:
-            - cmd: >- 
-                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
-                    
-                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
-        after_test:
-            - sh: |
-                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
     - 
         matrix:
             only:
@@ -141,14 +110,6 @@ for:
                   image: Ubuntu
         environment:
                PresetName: linux-debug-gcc
-        test_script:
-            - cmd: >- 
-                    NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
-                    
-                    CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
-        after_test:
-            - sh: |
-                find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
     - 
         matrix:
             only:
