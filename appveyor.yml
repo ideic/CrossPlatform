@@ -28,6 +28,7 @@ build_script:
 test_script:
 - cmd: >- 
         dir
+        
         cd RTPApp\out\build\x64-release
         
         NetworkTest\NetworkTest.exe --gtest_output=xml:testresults.xml
