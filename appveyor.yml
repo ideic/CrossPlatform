@@ -168,7 +168,7 @@ build_script:
 - cmd: >-
     cd RTPApp
 
-    cmake . --%PresetName%
+    cmake . --preset %PresetName%
 
     cd out\build\%PresetName%
 
