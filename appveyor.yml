@@ -28,8 +28,8 @@ build_script:
 test:
   assemblies:
     only:
-    - c:\projects\crossplatform\RTPApp\out\build\x64-release\NetworkTest\NetworkTest.exe
-    - c:\projects\crossplatform\RTPApp\out\build\x64-release\CommonTest\CommonTest.exe
+    - RTPApp\out\build\x64-release\NetworkTest\NetworkTest.exe
+    - RTPApp\out\build\x64-release\CommonTest\CommonTest.exe
 notifications:
 - provider: Email
   to:
