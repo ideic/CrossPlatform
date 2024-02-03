@@ -35,7 +35,7 @@ matrix:
                PresetName: x64-debug 
         before_build:
             - ps: |
-              call %VCVAR2022%
+                call %VCVAR2022%
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -46,7 +46,8 @@ matrix:
                 $wc = New-Object 'System.Net.WebClient'
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
-   - 
+                
+    - 
         matrix:
             only:
                 - configuration: msvcRelease
@@ -65,8 +66,9 @@ matrix:
             - ps: |
                 $wc = New-Object 'System.Net.WebClient'
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
-                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))                  
-   - 
+                $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
+                
+    - 
         matrix:
             only:
                 - configuration: clangDebug
@@ -86,7 +88,7 @@ matrix:
                 $wc = New-Object 'System.Net.WebClient'
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
-   - 
+    - 
         matrix:
             only:
                 - configuration: clangRelease
@@ -106,7 +108,7 @@ matrix:
                 $wc = New-Object 'System.Net.WebClient'
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path NetworkTest\testresults.xml))
                 $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path CommonTest\testresults.xml))
-   - 
+    - 
         matrix:
             only:
                 - configuration: clangDebug
@@ -118,10 +120,10 @@ matrix:
                     NetworkTest\NetworkTest --gtest_output=xml:NetworkTest\testresults.xml
                     
                     CommonTest\CommonTest --gtest_output=xml:CommonTest\testresults.xml
-            after_test:
+        after_test:
             - sh: |
                 find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
-   - 
+    - 
         matrix:
             only:
                 - configuration: clangRelease
@@ -136,7 +138,7 @@ matrix:
         after_test:
             - sh: |
                 find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"               
-   - 
+    - 
         matrix:
             only:
                 - configuration: gccDebug
