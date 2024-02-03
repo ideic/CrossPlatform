@@ -25,12 +25,9 @@ build_script:
     cd out\build\x64-release
 
     cmake --build .
-test:
-  assemblies:
-    only:
-    - RTPApp\out\build\x64-release\**\*Test.exe
 test_script:
-    -RTPApp\out\build\x64-release\**\*Test.exe --gtest_output=xml:testresults.xml
+    -RTPApp\out\build\x64-release\NetworkTest\NetworkTest.exe --gtest_output=xml:testresults.xml
+    -RTPApp\out\build\x64-release\CommonTest\CommonTest.exe --gtest_output=xml:testresults.xml
 
 notifications:
 - provider: Email
