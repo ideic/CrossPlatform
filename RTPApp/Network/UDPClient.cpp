@@ -48,6 +48,7 @@ void UDPClient::Init()
 {
     if (socketInfo_->socketId = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); socketInfo_->socketId == static_cast<decltype(socketInfo_->socketId)>(MY_SOCKET_ERROR)) {
         auto error = MY_GET_LAST_ERROR;
+      // NOLINTNEXTLINE(misc-include-cleaner)
         throw std::runtime_error("UDPClient Socket Init failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 
     }
@@ -56,6 +57,7 @@ void UDPClient::Init()
     if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&MAX_MSG_SIZE), sizeof(MAX_MSG_SIZE)); res == MY_SOCKET_ERROR)
     {
         auto error = MY_GET_LAST_ERROR;
+        // NOLINTNEXTLINE(misc-include-cleaner)
         throw std::runtime_error("UDPServer setsockopt SO_RCVBUF failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
     }
 }
@@ -73,6 +75,7 @@ std::vector<uint8_t> UDPClient::ReceiveData(std::string& fromHost, uint16_t& fro
     const int res = recvfrom(socketInfo_->socketId, reinterpret_cast<char*>(buffer.data()), static_cast<int>(buffer.size()), 0, reinterpret_cast<sockaddr*>(&from), &len);
     if (res == MY_SOCKET_ERROR) {
 		auto error = MY_GET_LAST_ERROR;
+        // NOLINTNEXTLINE(misc-include-cleaner)
 		logger_->Error("UDPClient recvfrom failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 		return {};
 	}
@@ -86,6 +89,7 @@ std::vector<uint8_t> UDPClient::ReceiveData(std::string& fromHost, uint16_t& fro
 #endif // WIN32
     if (ipAddress == nullptr) {
 		auto error = MY_GET_LAST_ERROR;
+        // NOLINTNEXTLINE(misc-include-cleaner)
 		logger_->Error("UDPClient inet_ntop failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 		return {};
 	}
@@ -113,6 +117,7 @@ bool UDPClient::SendData(std::string_view message)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     if (auto res = sendto(socketInfo_->socketId, message.data(), static_cast<int>(message.size()), 0, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)); res == MY_SOCKET_ERROR) {
 		auto error = MY_GET_LAST_ERROR;
+        // NOLINTNEXTLINE(misc-include-cleaner)
 		logger_->Error("UDPClient sendto failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
         return false;
     }
