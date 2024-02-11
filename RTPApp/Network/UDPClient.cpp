@@ -80,7 +80,7 @@ std::vector<uint8_t> UDPClient::ReceiveData(std::string& fromHost, uint16_t& fro
 		return {};
 	}
     fromPort = ntohs(from.sin_port);
-
+    // NOLINTNEXTLINE(misc-include-cleaner)
     std::array<char, INET_ADDRSTRLEN> fromHostBuffer{};
 #ifdef WIN32
     const auto *ipAddress = inet_ntop(AF_INET, &from.sin_addr, fromHostBuffer.data(), fromHostBuffer.size());
@@ -111,6 +111,7 @@ bool UDPClient::SendData(std::string_view message)
     // Filling server information 
     servaddr.sin_family = AF_INET; // IPv4 
     //servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // NOLINTNEXTLINE(misc-include-cleaner)
     inet_pton(servaddr.sin_family, host_.c_str(), &servaddr.sin_addr.s_addr);
     servaddr.sin_port = htons(port_);
 

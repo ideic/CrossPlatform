@@ -72,6 +72,7 @@ void TCPClient::Connect() {
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     inet_pton(servaddr.sin_family, mHost.c_str(), &servaddr.sin_addr.s_addr);
     // servaddr.sin_addr.s_addr = ( inet_addr(_host.c_str());
     servaddr.sin_port = htons(mPort);
