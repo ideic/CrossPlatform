@@ -5,6 +5,8 @@
 #include <thread>
 #include <memory>
 #include <atomic>
+#include <string_view>
+
 using namespace Xaba;
 using namespace std::chrono_literals;
 struct TestClass {
@@ -35,8 +37,10 @@ TEST(ThreadManagerTest, start_stop) {
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());
 	manager.Stop();
+    // NOLINTNEXTLINE(misc-include-cleaner)
 	std::this_thread::sleep_for(1ms);
 	instance->called = false;
+    // NOLINTNEXTLINE(misc-include-cleaner)
 	std::this_thread::sleep_for(1ms);
 
 	EXPECT_FALSE(instance->called);
@@ -49,6 +53,7 @@ TEST(ThreadManagerTest, moveFails) {
 	instance->keepRunningReturn = true;
 	manager.Start();
 	while (!instance->called) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
 		std::this_thread::sleep_for(1ms);
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());
@@ -62,6 +67,7 @@ TEST(ThreadManagerTest, move) {
 	instance->keepRunningReturn = false;
 	manager.Start();
 	while (!instance->called) {
+		// NOLINTNEXTLINE(misc-include-cleaner)
 		std::this_thread::sleep_for(1ms);
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());

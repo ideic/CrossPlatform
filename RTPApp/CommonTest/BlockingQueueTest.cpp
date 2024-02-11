@@ -3,6 +3,8 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <cstdint>
+#include <utility>
 #include "TrackNew.h"
 using namespace Xaba;
 using namespace std::chrono_literals;
