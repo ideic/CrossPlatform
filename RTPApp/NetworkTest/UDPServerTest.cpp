@@ -72,6 +72,7 @@ TEST_F(UDPServerTest, Init)
 			server->Init();
 			break;	
 		}
+		// NOLINTNEXTLINE(misc-include-cleaner)
 		catch (const std::exception& ex)
 		{
 			logger->Error(ex.what());
