@@ -1,16 +1,30 @@
 #include <gtest/gtest.h>
-
-#include "Network/UDPServer.h"
-#include "Network/UDPClient.h"
-using namespace Xaba::Network;	
+#include <string>
+#include <optional>
+#include <cstdint>
+#include <memory>
+#include <stdexcept>
+#include <vector>
 
 #if __has_include(<WinSock2.h>)
-	#include <WinSock2.h>
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <WinSock2.h>
 #endif
+#if __has_include(<ws2tcpip.h>)
+    #include <ws2tcpip.h>
+#endif
+
+#include "Network/UDPClient.h"
+#include "Network/UDPServer.h"
+#include <Common/BlockingQueue.h>
 #include "Common/Logger/Logger.h"
+
 
 using namespace Xaba;
 using namespace std::string_literals;
+using namespace Xaba::Network;	
 
 struct UDPServerTest : public ::testing::Test
 {
