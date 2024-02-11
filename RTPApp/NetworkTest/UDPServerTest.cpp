@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <cstdint>
 #include <memory>
@@ -12,15 +13,11 @@
     #endif
     #include <WinSock2.h>
 #endif
-#if __has_include(<ws2tcpip.h>)
-    #include <ws2tcpip.h>
-#endif
 
 #include "Network/UDPClient.h"
 #include "Network/UDPServer.h"
 #include <Common/BlockingQueue.h>
 #include "Common/Logger/Logger.h"
-
 
 using namespace Xaba;
 using namespace std::string_literals;
@@ -32,8 +29,12 @@ struct UDPServerTest : public ::testing::Test
 	{
 		#ifdef WIN32
 			WSADATA wsaData;
+            // NOLINTNEXTLINE(misc-include-cleaner)
 			auto res = WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+            // NOLINTNEXTLINE(misc-include-cleaner)
 			if (res != NOERROR) {
+				// NOLINTNEXTLINE(misc-include-cleaner)
 				throw std::runtime_error("WSAStartup failed: "s + std::to_string(res));
 			}
 		#endif // WIN32
@@ -62,6 +63,7 @@ TEST_F(UDPServerTest, Init)
 	std::optional<UDPServer> server;
 	const std::shared_ptr<ILogger> logger = std::make_shared<LoggerMock>();
 	const int maxAttempts = 10;
+	// NOLINTNEXTLINE(misc-include-cleaner)
 	for (size_t attempt = 0; attempt < maxAttempts; attempt++)
 	{
 		try
