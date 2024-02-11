@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <optional>
+#include <string>
+
 using namespace std;
 //#include <unistd.h>
 //#include <limits.h>
@@ -17,7 +19,7 @@ int main()
 	
 	//cout << "Hello CMake."<< hostname << " uname:"<< username << endl;
 	optional<string> test17{ " 17 Passed 2." };
-	cout << "Hello CMake." << test17.value() << endl;
+        cout << "Hello CMake." << test17.value() << '\n';
 	//std::cin.get();
 	return 0;
 }

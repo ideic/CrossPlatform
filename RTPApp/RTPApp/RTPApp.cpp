@@ -4,6 +4,8 @@
 #include <optional>
 #include <string>
 #include <iostream>
+#include <exception>
+
 using namespace std;
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
@@ -15,10 +17,10 @@ int main()
 
 	}
 	catch (const std::exception& e) {
-		std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << '\n';
 	}
 	catch (...) {
-		std::cerr << "Unknown exception" << std::endl;
+    std::cerr << "Unknown exception" << '\n';
 	}
 	return 0;
 }
