@@ -1,2 +1,2 @@
-// NOLINTNEXTLINE([misc-include-cleaner)
+// NOLINTNEXTLINE(misc-include-cleaner)
 #include "ThreadManager.h"
