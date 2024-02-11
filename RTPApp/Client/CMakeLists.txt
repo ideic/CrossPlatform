@@ -3,4 +3,4 @@
 #
 
 # Add source to this project's executable.
-add_executable (Client "ClientApp.cpp" "ClientApp.h")
+add_executable (Client "ClientApp.cpp" )

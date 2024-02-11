@@ -1,8 +1,7 @@
 ﻿// RTPApp.cpp : Defines the entry point for the application.
 //
-
-#include "RTPServer.h"
 #include "Common/InputParser.h"
+#include <iostream>
 using namespace std;
 
 void Usage()
