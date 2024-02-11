@@ -6,6 +6,7 @@
 #include <memory>
 #include <atomic>
 #include <string_view>
+#include <utility>
 
 using namespace Xaba;
 using namespace std::chrono_literals;
@@ -33,6 +34,7 @@ TEST(ThreadManagerTest, start_stop) {
 	ThreadManager<TestClass> manager(instance, logger);
 	manager.Start();
 	while (!instance->called) {
+		// NOLINTNEXTLINE(misc-include-cleaner)
 		std::this_thread::sleep_for(1ms);
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());
