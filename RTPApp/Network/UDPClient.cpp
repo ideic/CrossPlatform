@@ -8,7 +8,8 @@
 #include <utility>
 #include <stdexcept>
 #include <vector>
-#include <cinttypes>
+#include <cstdint>
+#include <string_view>
 
 using namespace Xaba::Network;
 using namespace std::string_literals;
