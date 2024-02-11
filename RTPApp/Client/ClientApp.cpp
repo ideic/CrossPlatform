@@ -7,7 +7,7 @@ using namespace std;
 //#include <unistd.h>
 //#include <limits.h>
 
-
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main()
 {
 	//char hostname[HOST_NAME_MAX];

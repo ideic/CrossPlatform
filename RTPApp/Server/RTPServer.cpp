@@ -10,6 +10,8 @@ void Usage()
 {
 	cout << "Usage: RTPServer --port <port-number>\n";
 }
+
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int argc, char** argv)
 {	
 	try {
