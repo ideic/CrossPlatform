@@ -1,5 +1,8 @@
 #include "InputParser.h"
 #include <algorithm>
+#include <string>
+#include <vector>
+
 using namespace std::string_literals;
 InputParser::InputParser(int argc, char** argv)
 {
@@ -15,6 +18,7 @@ std::string InputParser::getCmdOption(const std::string& option) const
 	if (found != _tokens.end() && ++found != _tokens.end()) {
 		return *found;
 	}
+	// NOLINTNEXTLINE(misc-include-cleaner)
 	return ""s;
 }
 

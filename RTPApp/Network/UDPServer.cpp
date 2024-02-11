@@ -53,6 +53,7 @@ void UDPServer::Init()
     // Filling server information 
     servaddr.sin_family = AF_INET; // IPv4 
     //servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // NOLINTNEXTLINE(misc-include-cleaner)
     inet_pton(servaddr.sin_family, host_.c_str(), &servaddr.sin_addr.s_addr);
     servaddr.sin_port = htons(port_);
 
