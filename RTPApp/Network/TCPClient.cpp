@@ -2,6 +2,11 @@
 #include <vector>
 #include <stdexcept>
 #include "NetworkHeader.h"
+#include <string>
+#include <cinttypes>
+#include <memory>
+#include <utility>
+#include <Common/Logger/Logger.h>
 #if __has_include(<WinSock2.h>)
     #ifndef NOMINMAX
         #define NOMINMAX

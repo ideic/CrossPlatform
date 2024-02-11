@@ -6,6 +6,9 @@
 #include <memory>
 #include <Common/Logger/Logger.h>
 #include <utility>
+#include <stdexcept>
+#include <vector>
+#include <cinttypes>
 
 using namespace Xaba::Network;
 using namespace std::string_literals;
