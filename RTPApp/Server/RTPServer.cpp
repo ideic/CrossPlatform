@@ -2,6 +2,8 @@
 //
 #include "Common/InputParser.h"
 #include <iostream>
+#include <string>
+#include <exception>
 using namespace std;
 
 void Usage()
@@ -21,8 +23,8 @@ int main(int argc, char** argv)
         }  
 	} 
     catch (const std::exception &e) {
-        cerr<< e.what() << endl;
-          return -1;
+        cerr<< e.what() << '\n';
+        return -1;
 	}
 
 	//std::cin.get();
