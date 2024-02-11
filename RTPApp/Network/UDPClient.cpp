@@ -2,8 +2,23 @@
 #include "NetworkHeader.h"
 #include <limits>
 #include <array>
+#include <string>
+#include <memory>
+#include <Common/Logger/Logger.h>
+#include <utility>
+
 using namespace Xaba::Network;
 using namespace std::string_literals;
+
+#if __has_include(<WinSock2.h>)
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <WinSock2.h>
+#endif
+#if __has_include(<ws2tcpip.h>)
+    #include <ws2tcpip.h>
+#endif
 
 struct UDPClient::SocketInfo {
 #ifdef WIN32

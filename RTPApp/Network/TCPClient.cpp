@@ -1,9 +1,16 @@
 #include "TCPClient.h"
-#include <functional>
 #include <vector>
-
+#include <stdexcept>
 #include "NetworkHeader.h"
-#include <iostream>
+#if __has_include(<WinSock2.h>)
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <WinSock2.h>
+#endif
+#if __has_include(<ws2tcpip.h>)
+    #include <ws2tcpip.h>
+#endif
 
 using namespace std::string_literals;
 using namespace Xaba::Network;
@@ -17,7 +24,7 @@ struct TCPClient::SocketInfo {
 #endif
 };
 
-TCPClient::TCPClient(std::string host, uint16_t port): _host(std::move(host)), _port(port),
+TCPClient::TCPClient(std::string host, uint16_t port): mHost(std::move(host)), mPort(port),
     _socketInfo (std::shared_ptr<SocketInfo>(new SocketInfo, [](TCPClient::SocketInfo* socketInfo) {
         CLOSESOCKET(socketInfo->socketId);
     })){
@@ -55,9 +62,9 @@ void TCPClient::Connect() {
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
-    inet_pton(servaddr.sin_family, _host.c_str(), &servaddr.sin_addr.s_addr);
+    inet_pton(servaddr.sin_family, mHost.c_str(), &servaddr.sin_addr.s_addr);
     // servaddr.sin_addr.s_addr = ( inet_addr(_host.c_str());
-    servaddr.sin_port = htons(_port);
+    servaddr.sin_port = htons(mPort);
 
     // connect the client socket to server socket
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)

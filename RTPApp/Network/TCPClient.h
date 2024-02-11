@@ -6,8 +6,8 @@ namespace Xaba::Network {
 	class TCPClient
 	{
 		struct SocketInfo;
-		std::string _host;
-		std::uint16_t _port;
+		std::string mHost;
+		std::uint16_t mPort;
 
 		std::shared_ptr<SocketInfo> _socketInfo;
 
