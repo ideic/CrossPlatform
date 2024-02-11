@@ -9,52 +9,40 @@ cmake_minimum_required (VERSION 3.25)
 #  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 #endif()]
 
-project ("RTPApp")
+project (
+	RTPApp
+	VERSION 0.0.0.1
+    DESCRIPTION "Rtp Handling Crossplatform POC"
+    HOMEPAGE_URL ""
+	LANGUAGES CXX
+)
 
-set(CMAKE_CXX_STANDARD 17)
+
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+	set(CMAKE_CXX_STANDARD 17)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-#if (MSVC)
-#	add_compile_options(/Qspectre)
-#endif()
-if (CMAKE_BUILD_TYPE STREQUAL Release)
-	if (MSVC)
-		add_compile_options(/O2)
-	else()
-		add_compile_options(-O3)
-	endif()
-endif()
-if(MSVC)
-	  add_compile_options(/W4 /WX)
-else()
-	  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Werror -Wformat=2 -Wunused -Wundef -g)
-endif()
+include(cmake/PreventInSourceBuilds.cmake)
+include(ProjectOptions.cmake)
 
-if (MSVC)
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-#else ()
-#	set(CMAKE_CXX_FLAGS_RELEASE "-MT")
-#	set(CMAKE_CXX_FLAGS_DEBUG "-MTd")
-endif()
+myproject_setup_options()
 
-option(ASAN_ENABLED "Build this target with AddressSanitizer" OFF)
+myproject_global_options()
 
-if(ASAN_ENABLED)
-   if(MSVC)
-	 if (CMAKE_BUILD_TYPE STREQUAL Debug)
-		add_compile_options(/fsanitize=address)
-	 endif()
-   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-     add_compile_options(-fsanitize=undefined,thread)
-     add_link_options(-fsanitize=undefined,thread)
-   elseif(CMAKE_BUILD_TYPE STREQUAL Debug) # Clang doesn't support ASAN in debug mode
-	 message(WARNING "ASAN is not supported in debug mode")
-   else()
-	 add_compile_options(-fsanitize=address,undefined)
-	 add_link_options(-fsanitize=address,undefined)
-   endif()
-endif()
-unset(ASAN_ENABLED CACHE)
+myproject_local_options()
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
+set(GIT_SHA
+    "Unknown"
+    CACHE STRING "SHA this build was generated from")
+string(
+  SUBSTRING "${GIT_SHA}"
+            0
+            8
+            GIT_SHORT_SHA)
+target_compile_features(myproject_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 
 # Include sub-projects.
 add_subdirectory ("RTPApp")
@@ -65,3 +53,21 @@ add_subdirectory ("Common")
 
 add_subdirectory ("CommonTest")
 add_subdirectory ("NetworkTest")
+
+
+if(myproject_BUILD_FUZZ_TESTS)
+  message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
+  if (NOT myproject_ENABLE_ADDRESS_SANITIZER AND NOT myproject_ENABLE_THREAD_SANITIZER)
+    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
+  endif()
+ # add_subdirectory(fuzz_test)
+
+endif()
+
+# If MSVC is being used, and ASAN is enabled, we need to set the debugger environment
+# so that it behaves well with MSVC's debugger, and we can run the target from visual studio
+if(MSVC)
+  get_all_installable_targets(all_targets)
+  message("all_targets=${all_targets}")
+  set_target_properties(${all_targets} PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=$(VC_ExecutablePath_x64);%PATH%")
+endif()

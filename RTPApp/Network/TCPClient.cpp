@@ -17,17 +17,19 @@ struct TCPClient::SocketInfo {
 #endif
 };
 
-TCPClient::TCPClient(std::string host, uint16_t port): _host(std::move(host)), _port(std::move(port)){
-    _socketInfo = std::shared_ptr<SocketInfo>(new SocketInfo, [](TCPClient::SocketInfo* socketInfo) {
+TCPClient::TCPClient(std::string host, uint16_t port): _host(std::move(host)), _port(port),
+    _socketInfo (std::shared_ptr<SocketInfo>(new SocketInfo, [](TCPClient::SocketInfo* socketInfo) {
         CLOSESOCKET(socketInfo->socketId);
-    });
+    })){
 }
 
 
 std::vector<uint8_t> TCPClient::ReceiveData()
 {
-    std::vector<uint8_t> buff(4096);
-    int readByte = recv(_socketInfo->socketId, (char*)buff.data(), static_cast<int>(buff.size()), 0);
+    constexpr int MAX_MSG_SIZE = 4096;
+    std::vector<uint8_t> buff(MAX_MSG_SIZE);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const int readByte = recv(_socketInfo->socketId, reinterpret_cast<char*>(buff.data()), static_cast<int>(buff.size()), 0);
     buff.resize(static_cast<size_t>(readByte));
     return buff;
 }
@@ -58,7 +60,8 @@ void TCPClient::Connect() {
     servaddr.sin_port = htons(_port);
 
     // connect the client socket to server socket
-    if (connect(_socketInfo->socketId, (sockaddr*)&servaddr, sizeof(servaddr)) == MY_SOCKET_ERROR) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    if (connect(_socketInfo->socketId, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)) == MY_SOCKET_ERROR) {
         auto error = MY_GET_LAST_ERROR;
         throw std::runtime_error("TCP Connect failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
     }

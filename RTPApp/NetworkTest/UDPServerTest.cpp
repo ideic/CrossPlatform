@@ -40,29 +40,34 @@ struct LoggerMock : public ILogger {
 	}
 };
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_F(UDPServerTest, Init)
 {
-	uint16_t i = 16000;
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+	uint16_t fromPort = 16000;
 	std::optional<UDPServer> server;
-	std::shared_ptr<ILogger> logger = std::make_shared<LoggerMock>();
-	for (size_t attempt = 0; attempt < 100; attempt++)
+	const std::shared_ptr<ILogger> logger = std::make_shared<LoggerMock>();
+	const int maxAttempts = 10;
+	for (size_t attempt = 0; attempt < maxAttempts; attempt++)
 	{
 		try
 		{
-			server.emplace("127.0.0.1", i, logger);
+			server.emplace("127.0.0.1", fromPort, logger);
 			server->Init();
 			break;	
 		}
 		catch (const std::exception& ex)
 		{
 			logger->Error(ex.what());
-			i += 2;
+			fromPort += 2;
 		}
 	}
 	ASSERT_TRUE(server.has_value());
-	UDPClient client("127.0.0.1", i, logger);
+	UDPClient client("127.0.0.1", fromPort, logger);
 	client.Init();
 	client.SendData("Hello");
+        
+	if (!server) { return; }
 	server->KeepRunning();
 	auto data = server->queue.getNext();
 	EXPECT_EQ(data.size(), 5);
@@ -72,3 +77,4 @@ TEST_F(UDPServerTest, Init)
 	EXPECT_EQ(data[3], 'l');
 	EXPECT_EQ(data[4], 'o');
 }
+// NOLINTEND(readability-function-cognitive-complexity)

@@ -1,48 +1,61 @@
 {
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
   "configurePresets": [
     {
-      "name": "windows-base",
+      "name": "conf-common",
+      "description": "General settings that apply to all configurations",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}"
+    },
+    {
+      "name": "windows-base",
+      "inherits": "conf-common",
+      "hidden": true,
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
-        "CMAKE_CXX_COMPILER": "cl.exe"
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "ENABLE_CPPCHECK_DEFAULT": "FALSE",
+        "ENABLE_CLANG_TIDY_DEFAULT": "FALSE"
       },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       }
     },
     {
       "name": "x64-debug",
       "displayName": "x64 Debug",
       "inherits": "windows-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_DEVELOPER_MODE": "ON"
       }
     },
     {
       "name": "x64-release",
       "displayName": "x64 Release",
-      "inherits": "x64-debug",
+      "inherits": "windows-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_DEVELOPER_MODE": "OFF"
       }
     },
     {
       "name": "windows-base-llvm",
+      "inherits": "conf-common",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl.exe",
         "CMAKE_CXX_COMPILER": "clang-cl.exe"
@@ -62,7 +75,8 @@
       "displayName": "llvm x64 Debug",
       "inherits": "windows-base-llvm",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_DEVELOPER_MODE": "ON"
       }
     },
     {
@@ -70,15 +84,14 @@
       "displayName": "llvm x64 Release",
       "inherits": "windows-base-llvm",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_DEVELOPER_MODE": "ON"
       }
     },
     {
       "name": "linux-base-gcc",
+      "inherits": "conf-common",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -103,7 +116,8 @@
       "displayName": "Linux Debug GCC",
       "inherits": "linux-base-gcc",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_DEVELOPER_MODE": "ON"
       }
     },
     {
@@ -111,15 +125,14 @@
       "displayName": "Linux Release GCC",
       "inherits": "linux-base-gcc",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_DEVELOPER_MODE": "OFF"
       }
     },
     {
       "name": "linux-base-llvm",
+      "inherits": "conf-common",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -144,7 +157,8 @@
       "displayName": "linux-base-llvm Debug",
       "inherits": "linux-base-llvm",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_DEVELOPER_MODE": "ON"
       }
     },
     {
@@ -152,8 +166,72 @@
       "displayName": "linux-base-llvm Release",
       "inherits": "linux-base-llvm",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_DEVELOPER_MODE": "OFF"
       }
     }
+  ],
+  "testPresets": [
+    {
+      "name": "test-common",
+      "description": "General settings that apply to all test configurations",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "test-windows-msvc-debug",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "x64-debug"
+    },
+    {
+      "name": "test-windows-msvc-release",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "x64-release"
+    },
+    {
+      "name": "test-windows-llvm-debug",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "llvm-x64-debug"
+    },
+    {
+      "name": "test-windows-llvm-release",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "llvm-x64-release"
+    },
+    {
+      "name": "test-linux-gcc-debug",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "linux-debug-gcc"
+    },
+    {
+      "name": "test-linux-gcc-release",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "linux-release-gcc"
+    },
+    {
+      "name": "test-linux-llvm-debug",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "linux-base-llvm-debug"
+    },
+    {
+      "name": "test-linux-llvm-release",
+      "displayName": "Strict",
+      "inherits": "test-common",
+      "configurePreset": "linux-base-llvm-release"
+    }
   ]
+
 }

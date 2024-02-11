@@ -1,6 +1,7 @@
 #include "UDPClient.h"
 #include "NetworkHeader.h"
 #include <limits>
+#include <array>
 using namespace Xaba::Network;
 using namespace std::string_literals;
 
@@ -13,12 +14,15 @@ struct UDPClient::SocketInfo {
 };
 
 constexpr int MAX_MSG_SIZE = std::numeric_limits<uint16_t>::max();
-UDPClient::UDPClient(std::string host, uint16_t port, std::shared_ptr<ILogger> logger) : host_(std::move(host)), port_(port), logger_(std::move(logger))
-{
-    socketInfo_ = std::shared_ptr<SocketInfo>(new SocketInfo, [](UDPClient::SocketInfo* socketInfo) {
-		if (socketInfo->socketId != MY_INVALID_SOCKET)
+UDPClient::UDPClient(std::string host, uint16_t port, std::shared_ptr<ILogger> logger) : host_(std::move(host)), 
+    port_(port), 
+    socketInfo_ (std::shared_ptr<SocketInfo>(new SocketInfo, [](UDPClient::SocketInfo* socketInfo) {
+          if (socketInfo->socketId != MY_INVALID_SOCKET) {
 			CLOSESOCKET(socketInfo->socketId);
-		});
+          }
+    })),
+    logger_(std::move(logger))
+    {
 }
 
 void UDPClient::Init()
@@ -29,8 +33,8 @@ void UDPClient::Init()
 
     }
 
-
-    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_SNDBUF, (char*)&MAX_MSG_SIZE, sizeof(MAX_MSG_SIZE)); res == MY_SOCKET_ERROR)
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&MAX_MSG_SIZE), sizeof(MAX_MSG_SIZE)); res == MY_SOCKET_ERROR)
     {
         auto error = MY_GET_LAST_ERROR;
         throw std::runtime_error("UDPServer setsockopt SO_RCVBUF failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
@@ -46,29 +50,34 @@ std::vector<uint8_t> UDPClient::ReceiveData(std::string& fromHost, uint16_t& fro
     socklen_t len = sizeof(from);
 #endif
     std::vector<uint8_t> buffer(MAX_MSG_SIZE);
-    int res = recvfrom(socketInfo_->socketId, reinterpret_cast<char*>(buffer.data()), static_cast<int>(buffer.size()), 0, reinterpret_cast<sockaddr*>(&from), &len);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const int res = recvfrom(socketInfo_->socketId, reinterpret_cast<char*>(buffer.data()), static_cast<int>(buffer.size()), 0, reinterpret_cast<sockaddr*>(&from), &len);
     if (res == MY_SOCKET_ERROR) {
 		auto error = MY_GET_LAST_ERROR;
 		logger_->Error("UDPClient recvfrom failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 		return {};
 	}
     fromPort = ntohs(from.sin_port);
+
+    std::array<char, INET_ADDRSTRLEN> fromHostBuffer{};
 #ifdef WIN32
-    auto ip = ntohl(from.sin_addr.S_un.S_addr);
+    const auto *ipAddress = inet_ntop(AF_INET, &from.sin_addr, fromHostBuffer.data(), fromHostBuffer.size());
 #else
-    auto ip = ntohl(from.sin_addr.s_addr); //.S_un.S_addr);
-
+    const auto *ipAddress = inet_ntop(AF_INET, &from.sin_addr, fromHostBuffer.data(), fromHostBuffer.size());
 #endif // WIN32
-
-    fromHost = std::to_string((ip >> 24) & 0xFF) + "."s + std::to_string((ip >> 16) & 0xFF) + "."s + std::to_string((ip >> 8) & 0xFF) + "."s + std::to_string(ip & 0xFF);
+    if (ipAddress == nullptr) {
+		auto error = MY_GET_LAST_ERROR;
+		logger_->Error("UDPClient inet_ntop failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
+		return {};
+	}
+    fromHost = std::string(begin(fromHostBuffer), end(fromHostBuffer));
 	buffer.resize(res);
     return buffer;
 }
 
 bool UDPClient::SendData(std::string_view message)
 {
-	if (message.empty())
-		return true;
+    if (message.empty()) { return true; }
 
     if (message.size() > MAX_MSG_SIZE) {
         logger_->Error("UDPClient::SendData message size is too big");
@@ -82,6 +91,7 @@ bool UDPClient::SendData(std::string_view message)
     inet_pton(servaddr.sin_family, host_.c_str(), &servaddr.sin_addr.s_addr);
     servaddr.sin_port = htons(port_);
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     if (auto res = sendto(socketInfo_->socketId, message.data(), static_cast<int>(message.size()), 0, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)); res == MY_SOCKET_ERROR) {
 		auto error = MY_GET_LAST_ERROR;
 		logger_->Error("UDPClient sendto failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));

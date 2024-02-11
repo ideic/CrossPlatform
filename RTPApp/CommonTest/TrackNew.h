@@ -52,7 +52,7 @@ public:
       else {
         printf("def-aligned) ");
       }
-      printf("=> %p (total: %zu bytes)\n", (void*)p, sumSize);
+      printf("=> %p (total: %zu bytes)\n", static_cast<void*>(p), sumSize);
     }
     return p;
   }

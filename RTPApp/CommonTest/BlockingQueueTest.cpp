@@ -12,19 +12,19 @@ TEST(BlockingQueueTest, MeasureThroughput) {
 	TrackNew::reset();
 	auto start = std::chrono::system_clock::now();
 	std::thread producer([&queue]() {
-		
-		for (int i = 0; i < 800'000; i++) // 800'000 * 1500 * 8 = 9.6Gbps
+		const int TenGbpsCycle = 800'000;
+        for (int i = 0; i < TenGbpsCycle; i++)// 800'000 * 1500 * 8 = 9.6Gbps
 		{
-			std::vector<uint8_t> data(1500);
+			const int ethernetFrameSize = 1500;
+			std::vector<uint8_t> data(ethernetFrameSize);
 			queue.push(std::move(data));
 		}
 	});
 
 	auto consumer = [&queue]() {
-		std::vector<uint8_t> data;
 		while (true)
 		{
-			data = queue.getNext();
+			auto data = queue.getNext();
 			if (data.empty())
 			{
 				break;
@@ -49,19 +49,20 @@ TEST(BlockingQueueTest, MeasureThroughput2) {
 	TrackNew::reset();
 	auto start = std::chrono::system_clock::now();
 	std::thread producer([&queue]() {
-
-		for (int i = 0; i < 800'000; i++) // 800'000 * 1500 * 8 = 9.6Gbps
+        const int TenGbpsCycle = 800'000;
+        for (int i = 0; i < TenGbpsCycle; i++)// 800'000 * 1500 * 8 = 9.6Gbps
 		{
-			std::vector<uint8_t> data(1500);
+            const int ethernetFrameSize = 1500;
+            std::vector<uint8_t> data(ethernetFrameSize);
 			queue.push(std::move(data));
 		}
 		});
 
 	auto consumer = [&queue]() {
-		std::vector<uint8_t> data;
+
 		while (true)
 		{
-			data = queue.getNext();
+			auto data = queue.getNext();
 			if (data.empty())
 			{
 				break;

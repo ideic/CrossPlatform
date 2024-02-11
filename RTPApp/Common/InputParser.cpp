@@ -3,8 +3,10 @@
 using namespace std::string_literals;
 InputParser::InputParser(int argc, char** argv)
 {
-	for (int i = 1; i < argc; ++i)
-		_tokens.emplace_back(argv[i]);
+  for (int i = 1; i < argc; ++i) { 
+	  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+	  _tokens.emplace_back(argv[i]); 
+  }
 }
 
 std::string InputParser::getCmdOption(const std::string& option) const

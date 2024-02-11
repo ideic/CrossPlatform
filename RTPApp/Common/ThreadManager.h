@@ -20,7 +20,7 @@ namespace Xaba {
 		ThreadManager(const ThreadManager& from) = delete;
 		ThreadManager& operator=(const ThreadManager& from) = delete;
 
-		ThreadManager(ThreadManager&& from) {
+		ThreadManager(ThreadManager &&from) {
 			if (!from.stopped_) {
 				throw std::runtime_error("ThreadManager can't be moved while running");
 			}

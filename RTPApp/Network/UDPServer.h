@@ -14,7 +14,7 @@ namespace Xaba::Network {
 		std::shared_ptr<SocketInfo> socketInfo_;
 		std::shared_ptr<ILogger> logger_;
 		public:
-			UDPServer(std::string _host, std::uint16_t _port, std::shared_ptr<ILogger> logger);
+			UDPServer(std::string host, std::uint16_t port, std::shared_ptr<ILogger> logger);
 			void Init();
 			bool KeepRunning();
 			BlockingQueue<std::vector<uint8_t>> queue{};

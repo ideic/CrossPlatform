@@ -52,8 +52,7 @@ TEST(ThreadManagerTest, moveFails) {
 		std::this_thread::sleep_for(1ms);
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());
-	EXPECT_ANY_THROW({ auto t2 = std::move(manager); });
-	manager.Stop();
+	EXPECT_ANY_THROW({ auto thread2 = std::move(manager); });
 }
 
 TEST(ThreadManagerTest, move) {
@@ -67,6 +66,5 @@ TEST(ThreadManagerTest, move) {
 	}
 	EXPECT_NE(instance->threadId, std::this_thread::get_id());
 	manager.Stop();
-	auto t2 = std::move(manager);
-	
+	auto thread2 = std::move(manager);
 }
