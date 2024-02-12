@@ -131,9 +131,9 @@ for:
                 
                 cd RTPApp
                 
-                cmake . --preset %PresetName%
+                cmake . --preset linux-base-llvm-debug
                 
-                cd out\build\%PresetName%
+                cd out\build\linux-base-llvm-debug
                 
                 cmake --build .
     - 
