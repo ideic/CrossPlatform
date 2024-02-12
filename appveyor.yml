@@ -80,6 +80,16 @@ for:
                PresetName: llvm-x64-debug
         before_build:
              - call "%VCVAR2022%"
+        build_script:
+            - cmd: >-
+                cd RTPApp
+
+                cmake . --preset %PresetName%
+
+                cd out\build\%PresetName%
+
+                cmake --build .
+        
     - 
         matrix:
             only:
@@ -118,9 +128,13 @@ for:
         build_script:
             - sh: >-
                 pwd
+                
                 cd RTPApp
+                
                 cmake . --preset %PresetName%
+                
                 cd out\build\%PresetName%
+                
                 cmake --build .
     - 
         matrix:
