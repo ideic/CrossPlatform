@@ -32,8 +32,17 @@ for:
         environment:
                PresetName: x64-debug 
         before_build:
-            - call "%VCVAR2022%"                
-    - 
+            - call "%VCVAR2022%"           
+        build_script:
+            - cmd: >-
+                cd RTPApp
+
+                cmake . --preset %PresetName%
+
+                cd out\build\%PresetName%
+
+                cmake --build .            
+    -
         matrix:
             only:
                 - configuration: msvcRelease
@@ -42,6 +51,15 @@ for:
                 PresetName: x64-release
         before_build:
              - call "%VCVAR2022%"          
+        build_script:
+            - cmd: >-
+                cd RTPApp
+
+                cmake . --preset %PresetName%
+
+                cd out\build\%PresetName%
+
+                cmake --build .
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -71,6 +89,15 @@ for:
                PresetName: llvm-x64-release
         before_build:
              - call "%VCVAR2022%"
+        build_script:
+            - cmd: >-
+                cd RTPApp
+
+                cmake . --preset %PresetName%
+
+                cd out\build\%PresetName%
+
+                cmake --build .             
         test_script:
             - cmd: >- 
                     NetworkTest\NetworkTest.exe --gtest_output=xml:NetworkTest\testresults.xml
@@ -88,6 +115,13 @@ for:
                   image: Ubuntu
         environment:
                PresetName: linux-base-llvm-debug
+        build_script:
+            - cmd: >-
+                pwd
+                cd RTPApp
+                cmake . --preset %PresetName%
+                cd out\build\%PresetName%
+                cmake --build .
     - 
         matrix:
             only:
@@ -125,15 +159,7 @@ for:
         after_test:
             - sh: |
                 find "$APPVEYOR_BUILD_FOLDER" -type f -name 'testresults.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
-build_script:
-- cmd: >-
-    cd RTPApp
 
-    cmake . --preset %PresetName%
-
-    cd out\build\%PresetName%
-
-    cmake --build .
 notifications:
 - provider: Email
   to:
