@@ -127,11 +127,11 @@ for:
                PresetName: linux-base-llvm-debug
         before_build:
             - sh: >-
-                sudo apt-get update
+                sudo apt-get -y update
                 
-                sudo apt-get install ccache
+                sudo apt-get -y install ccache
                 
-                sudo apt-get install cppcheck
+                sudo apt-get -y install cppcheck
                 
         build_script:
             - sh: >-
