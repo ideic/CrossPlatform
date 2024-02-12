@@ -116,7 +116,7 @@ for:
         environment:
                PresetName: linux-base-llvm-debug
         build_script:
-            - cmd: >-
+            - sh: >-
                 pwd
                 cd RTPApp
                 cmake . --preset %PresetName%
