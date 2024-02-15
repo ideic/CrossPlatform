@@ -135,6 +135,8 @@ for:
                 
                 sudo apt-get -y install clang-tidy
                 
+                alias cd='cd -P'
+                
         build_script:
             - sh: >-
                 pwd
