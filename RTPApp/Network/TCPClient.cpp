@@ -42,7 +42,7 @@ std::vector<uint8_t> TCPClient::ReceiveData()
     constexpr int MAX_MSG_SIZE = 4096;
     std::vector<uint8_t> buff(MAX_MSG_SIZE);
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    const int readByte = recv(_socketInfo->socketId, reinterpret_cast<char*>(buff.data()), static_cast<int>(buff.size()), 0);
+    const auto readByte = recv(_socketInfo->socketId, reinterpret_cast<char*>(buff.data()), static_cast<int>(buff.size()), 0);
     // NOLINTNEXTLINE(misc-include-cleaner)
     buff.resize(static_cast<size_t>(readByte));
     return buff;
@@ -53,7 +53,7 @@ void TCPClient::SendData(std::string_view message){
     // NOLINTNEXTLINE(misc-include-cleaner)
     if (static_cast<size_t>(res) != message.length()) {
 		auto error = MY_GET_LAST_ERROR;
-      // NOLINTNEXTLINE(misc-include-cleaner)
+      // NOLINTNEXTLINE(misc-include-cleaner,concurrency-mt-unsafe)
 		throw std::runtime_error("TCP Send failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
 	}
 }
@@ -66,7 +66,7 @@ void TCPClient::Connect() {
     _socketInfo->socketId = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_socketInfo->socketId == MY_INVALID_SOCKET) {
         auto error = MY_GET_LAST_ERROR;
-        // NOLINTNEXTLINE(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner,concurrency-mt-unsafe)
         throw std::runtime_error("TCP Socket Init failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
     }
 
@@ -81,7 +81,7 @@ void TCPClient::Connect() {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     if (connect(_socketInfo->socketId, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)) == MY_SOCKET_ERROR) {
         auto error = MY_GET_LAST_ERROR;
-        // NOLINTNEXTLINE(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner,concurrency-mt-unsafe)
         throw std::runtime_error("TCP Connect failed:"s + std::to_string(error) + " Reason: "s + MY_GET_ERROR_MESSAGE(error));
     }
 }
