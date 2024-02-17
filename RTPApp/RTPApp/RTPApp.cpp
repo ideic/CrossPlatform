@@ -12,15 +12,14 @@ using namespace std;
 int main()
 {
 	try {
-    optional<string> test17{ " 17 Passed 2." };
-    cout << "Hello CMake." << test17.value() << "\n";
-
+		optional<string> test17{ " 17 Passed 2." };
+		cout << "Hello CMake." << test17.value() << "\n";
 	}
 	catch (const std::exception& e) {
-    std::cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 	catch (...) {
-    std::cerr << "Unknown exception" << '\n';
+		std::cerr << "Unknown exception" << '\n';
 	}
 	return 0;
 }

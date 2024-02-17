@@ -168,6 +168,27 @@ for:
                   image: Ubuntu
         environment:
                PresetName: linux-debug-gcc
+        before_build:
+            - sh: >-
+                sudo apt-get -y update
+                
+                sudo apt-get -y install ccache
+                
+                sudo apt-get -y install cppcheck
+                
+                sudo apt-get -y install clang-tidy
+                
+        build_script:
+            - sh: >-
+                pwd
+                
+                cd RTPApp
+                
+                cmake . --preset linux-debug-gcc
+                
+                cd out/build/linux-debug-gcc
+                
+                cmake --build .               
     - 
         matrix:
             only:
