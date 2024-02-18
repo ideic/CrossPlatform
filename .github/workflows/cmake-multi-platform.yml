@@ -81,11 +81,11 @@ jobs:
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v4
-      with:
+      #with:
         # Version of ninja-build to install
-        version: # default is 1.11.1
+        # version: # default is 1.11.1
         # Override default platform with one of [win, mac, linux]
-        platform: [win, linux]
+        # platform: linux
         # Destination directory, will be added to PATH
         #destination: # optional, default is ninja-build
         # Proxy server
