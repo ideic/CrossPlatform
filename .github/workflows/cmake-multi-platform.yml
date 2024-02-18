@@ -88,7 +88,7 @@ jobs:
       # uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98
       uses: EnricoMi/publish-unit-test-result-action@v2.14.0
       with:
-        files: ${{ steps.strings.outputs.build-output-dir }}/**/testresults.xml 
+        files: /**/testresults.xml 
         
   windowsbuild:
     runs-on: ${{ matrix.os }}
