@@ -7,7 +7,7 @@ namespace Xaba::Network {
 	{
 		struct SocketInfo;
 		std::string mHost;
-		std::uint16_t mPort;
+		uint16_t mPort;
 
 		std::shared_ptr<SocketInfo> _socketInfo;
 

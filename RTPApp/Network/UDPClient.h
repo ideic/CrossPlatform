@@ -7,8 +7,8 @@ namespace Xaba::Network {
 	class UDPClient
 	{
 		struct SocketInfo;
-		std::string host_;
-		std::uint16_t port_;
+		std::string mHost;
+		uint16_t mPort;
 
 		std::shared_ptr<SocketInfo> socketInfo_;
 		std::shared_ptr<ILogger> logger_;

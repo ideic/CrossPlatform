@@ -33,8 +33,8 @@ struct UDPClient::SocketInfo {
 };
 
 constexpr int MAX_MSG_SIZE = std::numeric_limits<uint16_t>::max();
-UDPClient::UDPClient(std::string host, uint16_t port, std::shared_ptr<ILogger> logger) : host_(std::move(host)), 
-    port_(port), 
+UDPClient::UDPClient(std::string host, uint16_t port, std::shared_ptr<ILogger> logger) : mHost(std::move(host)), 
+    mPort(port), 
     socketInfo_ (std::shared_ptr<SocketInfo>(new SocketInfo, [](UDPClient::SocketInfo* socketInfo) {
           if (socketInfo->socketId != MY_INVALID_SOCKET) {
 			CLOSESOCKET(socketInfo->socketId);
@@ -112,8 +112,8 @@ bool UDPClient::SendData(std::string_view message)
     servaddr.sin_family = AF_INET; // IPv4 
     //servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     // NOLINTNEXTLINE(misc-include-cleaner)
-    inet_pton(servaddr.sin_family, host_.c_str(), &servaddr.sin_addr.s_addr);
-    servaddr.sin_port = htons(port_);
+    inet_pton(servaddr.sin_family, mHost.c_str(), &servaddr.sin_addr.s_addr);
+    servaddr.sin_port = htons(mPort);
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     if (auto res = sendto(socketInfo_->socketId, message.data(), static_cast<int>(message.size()), 0, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)); res == MY_SOCKET_ERROR) {
