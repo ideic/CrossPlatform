@@ -81,11 +81,14 @@ jobs:
       run: |
         ${{ steps.strings.outputs.build-output-dir }}/NetworkTest/NetworkTest --gtest_output=xml:NetworkTest/testresults.xml
         ${{ steps.strings.outputs.build-output-dir }}/CommonTest/CommonTest --gtest_output=xml:CommonTest/testresults.xml
-   # - name: Test
-      #working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      # run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Publish Test Results
+      # You may pin to the exact commit or the version.
+      # uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98
+      uses: EnricoMi/publish-unit-test-result-action@v2.14.0
+      with:
+        files: ${{ steps.strings.outputs.build-output-dir }}/**/testresults.xml 
+        
   windowsbuild:
     runs-on: ${{ matrix.os }}
 
@@ -173,10 +176,5 @@ jobs:
       run: |
         ${{ steps.strings.outputs.build-output-dir }}/NetworkTest/NetworkTest.exe --gtest_output=xml:NetworkTest/testresults.xml
         ${{ steps.strings.outputs.build-output-dir }}/CommonTest/CommonTest.exe --gtest_output=xml:CommonTest/testresults.xml
-    - name: Publish Test Results
-      # You may pin to the exact commit or the version.
-      # uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98
-      uses: EnricoMi/publish-unit-test-result-action@v2.14.0
-      with:
-        files: ${{ steps.strings.outputs.build-output-dir }}/**/testresults.xml 
+
                           
