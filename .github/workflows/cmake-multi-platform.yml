@@ -9,7 +9,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  linuxbuild:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -17,10 +17,6 @@ jobs:
       fail-fast: true
 
       # Set up a matrix to run the following 3 configurations:
-      # 1. Windows msvc, Debug
-      # 2. <Windows msvc, Release, latest MSVC compiler toolchain on the default runner image, default generator, test>
-      # 3. Windows clang, Debug
-      # 4. <Windows clang, Release, test>
       # 5. <Linux gcc, Debug, latest GCC compiler toolchain on the default runner image, default generator>
       # 6. <Linux gcc, Release, latest Clang compiler toolchain on the default runner image, default generator>
       # 3. Linux clang, Debug
@@ -28,26 +24,10 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         build_type: [Release, Debug]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc, clang]
         include:
-          - os: windows-latest
-            build_type: Debug
-            c_compiler: cl
-            preset_name: x64-debug
-          - os: windows-latest
-            build_type: Release
-            c_compiler: cl
-            preset_name: x64-release
-          - os: windows-latest
-            build_type: Debug
-            c_compiler: clang
-            preset_name: llvm-x64-debug
-          - os: windows-latest
-            build_type: Release
-            c_compiler: clang
-            preset_name: llvm-x64-release
           - os: ubuntu-latest
             build_type: Debug
             c_compiler: gcc
@@ -63,12 +43,7 @@ jobs:
           - os: ubuntu-latest
             build_type: Release
             c_compiler: clang
-            preset_name: linux-base-llvm-release            
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: ubuntu-latest
-            c_compiler: cl             
+            preset_name: linux-base-llvm-release                        
     steps:
     - uses: actions/checkout@v4
     
@@ -81,11 +56,11 @@ jobs:
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v4
-      #with:
+      with:
         # Version of ninja-build to install
         # version: # default is 1.11.1
         # Override default platform with one of [win, mac, linux]
-        # platform: linux
+        platform: linux
         # Destination directory, will be added to PATH
         #destination: # optional, default is ninja-build
         # Proxy server
@@ -105,4 +80,85 @@ jobs:
       #working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      #run: ctest --build-config ${{ matrix.build_type }}
+      # run: ctest --build-config ${{ matrix.build_type }}
+  windowsbuild:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: true
+
+      # Set up a matrix to run the following 3 configurations:
+      # 1. Windows msvc, Debug
+      # 2. <Windows msvc, Release, latest MSVC compiler toolchain on the default runner image, default generator, test>
+      # 3. Windows clang, Debug
+      # 4. <Windows clang, Release, test>
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      matrix:
+        os: [windows-latest]
+        build_type: [Release, Debug]
+        c_compiler: [clang, cl]
+        include:
+          - os: windows-latest
+            build_type: Debug
+            c_compiler: cl
+            preset_name: x64-debug
+          - os: windows-latest
+            build_type: Release
+            c_compiler: cl
+            preset_name: x64-release
+          - os: windows-latest
+            build_type: Debug
+            c_compiler: clang
+            preset_name: llvm-x64-debug
+          - os: windows-latest
+            build_type: Release
+            c_compiler: clang
+            preset_name: llvm-x64-release                    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/RTPApp/out/build/${{ matrix.preset_name}}" >> "$GITHUB_OUTPUT"
+
+    - name: Install ninja-build tool
+      uses: seanmiddleditch/gha-setup-ninja@v4
+      with:
+        # Version of ninja-build to install
+        # version: # default is 1.11.1
+        # Override default platform with one of [win, mac, linux]
+        platform: win
+        # Destination directory, will be added to PATH
+        #destination: # optional, default is ninja-build
+        # Proxy server
+        #http_proxy: # optional
+    - name: Setup VS Dev Environment
+      # You may pin to the exact commit or the version.
+      # uses: seanmiddleditch/gha-setup-vsdevenv@adf16e54e207da0da148c8901a98a34d7aa3eb7a
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      #with:
+        # Name or path to vswhere.exr
+        #vswhere: # optional, default is vswhere.exe
+        # Target build architecture
+        #arch: # optional, default is amd64
+        # Host architecture (x86, x86_amd64, or amd64)
+        #host_arch: # optional, default is 
+        # Overrides the default WinSDK version
+        #winsdk: # optional, default is 
+        # Overrides the default toolset version
+        #toolset_version: # optional, default is 
+        # List of components required in the selected VS installation (semi-colon separated)
+        #components: # optional, default is Microsoft.VisualStudio.Component.VC.Tools.x86.x64       
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: >
+        cmake ${{ github.workspace }}/RTPApp --preset ${{ matrix.preset_name}} 
+
+    - name: Build
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} 
