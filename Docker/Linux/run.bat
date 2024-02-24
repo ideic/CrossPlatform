@@ -1,0 +1,1 @@
+docker run -t -d -p 2222:22 linuxdevenv:latest
