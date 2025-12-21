@@ -58,7 +58,7 @@ void UDPServer::Init()
     servaddr.sin_port = htons(port_);
 
     const int FiveSeconds = 5;
-    struct timeval timeout{FiveSeconds,0};
+    struct timeval timeout{ .tv_sec = FiveSeconds, .tv_usec = 0};
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     if (auto res = setsockopt(socketInfo_->socketId, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)); res == MY_SOCKET_ERROR) {

@@ -5,10 +5,9 @@
 #include <string>
 #include <exception>
 using namespace std;
-
-void Usage()
+namespace
 {
-	cout << "Usage: RTPServer --port <port-number>\n";
+  void Usage() { cout << "Usage: RTPServer --port <port-number>\n"; }
 }
 
 // NOLINTNEXTLINE(bugprone-exception-escape)

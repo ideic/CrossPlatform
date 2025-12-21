@@ -14,8 +14,8 @@ InputParser::InputParser(int argc, char** argv)
 
 std::string InputParser::getCmdOption(const std::string& option) const
 {
-	auto found = std::find(_tokens.begin(), _tokens.end(), option);
-	if (found != _tokens.end() && ++found != _tokens.end()) {
+	auto found = std::ranges::find(_tokens, option);
+	if (found != _tokens.end() && (*found != _tokens.back())) {
 		return *found;
 	}
 	// NOLINTNEXTLINE(misc-include-cleaner)
@@ -24,5 +24,5 @@ std::string InputParser::getCmdOption(const std::string& option) const
 
 bool InputParser::cmdOptionExists(const std::string& option) const
 {
-	return std::find(_tokens.begin(), _tokens.end(), option) != _tokens.end();
+	return std::ranges::contains(_tokens, option);
 }
