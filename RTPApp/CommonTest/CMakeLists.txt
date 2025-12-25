@@ -15,7 +15,7 @@
  set_target_properties(gmock_main PROPERTIES CXX_CLANG_TIDY "")
 
 enable_testing()
-add_executable(CommonTest  "BlockingQueueTest.cpp" "ThreadManagerTest.cpp")
+add_executable(CommonTest  "BlockingQueueTest.cpp" "ThreadManagerTest.cpp" "DateTimeProviderTest.cpp")
 #set_property(TARGET CommonTest PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 target_link_libraries(CommonTest  GTest::gtest_main Common)
